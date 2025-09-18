@@ -83,6 +83,10 @@ def add_megatron_arguments(parser: argparse.ArgumentParser):
     parser = _add_msc_args(parser)
     parser = _add_kitchen_quantization_arguments(parser)
     parser = _add_sft_args(parser)
+    # add enable-auto-parallel argument
+    parser = _add_auto_parallel_args(parser)
+    # add auto-pipeline argument
+    parser = _add_auto_pipeline_args(parser)
 
     return parser
 
@@ -3069,4 +3073,21 @@ def _add_sft_args(parser):
     group.add_argument('--sft', action="store_true", help='Megatron SFT training')
     group.add_argument('--sft-tokenizer-prompt-format', type=str, default="nemotron-h-aligned", 
                        help='SFT prompt format.')
+    return parser
+
+def _add_auto_parallel_args(parser):
+    group = parser.add_argument_group(title='auto_parallel')
+    group.add_argument('--enable-auto-parallel', action='store_true',
+                       help='Enable automatic parallelism.')
+    group.add_argument('--gpu_peak_memory', type=int, default=32,
+                       help='The peak memory (in GB) of each GPU for auto parallelism to consider.')
+    group.add_argument('--model-type', type=str, default=None,
+                       choices=['llama', 'baichuan', 'qwen', 'mistral'],
+                       help='The type of the model.')
+    return parser
+
+def _add_auto_pipeline_args(parser):
+    group = parser.add_argument_group(title='auto_pipeline')
+    group.add_argument('--enable-auto-pipeline', action='store_true',
+                       help='Enable automatic pipeline layers partitioning.')
     return parser

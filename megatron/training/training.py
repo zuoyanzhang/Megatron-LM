@@ -126,6 +126,9 @@ stimer = StragglerDetector()
 
 from megatron.core.msc_utils import MultiStorageClientFeature, open_file
 
+from megatron.training.global_vars import set_args
+from megatron.core.auto_parallel.auto_parallel_generate import search_optimal_parallel_configurations
+
 
 def destroy_global_state():
     destroy_global_vars()
@@ -580,6 +583,11 @@ def pretrain(
 
     args = get_args()
     timers = get_timers()
+    
+    if args.enable_auto_parallel:
+        set_args(args)
+        search_optimal_parallel_configurations(args)
+        return
 
     if args.log_progress:
         append_to_progress_log("Starting job")
